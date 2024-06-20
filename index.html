@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            width: 200px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>UPI QR Code Generator</h1>
+    <label for="amount">Enter Amount Expression:</label>
+    <input type="text" id="amount" placeholder="Enter amount expression (e.g., 1000+10+18)">
+    <button onclick="calculateAmount()">Calculate Amount</button>
+    <button onclick="generateQRCode()">Generate QR Code</button>
+    <button onclick="shareQRCode()">Share QR Code</button>
+    <div id="qrcode"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script>
+        let qrCodeDataURL = '';
+
+        function calculateAmount() {
+            const amountInput = document.getElementById('amount');
+            const expression = amountInput.value;
+            try {
+                const amount = eval(expression); // Evaluate the expression
+                if (amount >= 0) {
+                    amountInput.value = amount.toFixed(2); // Set calculated amount with 2 decimal places
+                } else {
+                    alert('Amount cannot be negative.');
+                }
+            } catch (e) {
+                alert('Invalid expression. Please enter a valid amount expression.');
+            }
+        }
+
+        function generateQRCode() {
+            const amount = document.getElementById('amount').value;
+            if (amount && amount > 0) {
+                const upiUrl = `upi://pay?pa=8761806448@okbizaxis&pn=Mrs.%20BINU%20%20DAULAGUPHU&mc=5712&aid=uGICAgMDywqSXag&ver=01&mode=01&tr=BCR2DN4TZLUINOKR&am=${amount}`;
+                const qrcodeContainer = document.getElementById('qrcode');
+                qrcodeContainer.innerHTML = ''; // Clear previous QR code
+                QRCode.toDataURL(upiUrl, function (error, url) {
+                    if (error) {
+                        console.error(error);
+                        alert('Error generating QR code');
+                    } else {
+                        qrCodeDataURL = url; // Save the QR code Data URL
+                        const img = document.createElement('img');
+                        img.src = url;
+                        qrcodeContainer.appendChild(img);
+                    }
+                });
+            } else {
+                alert('Please enter a valid amount.');
+            }
+        }
+
+        async function shareQRCode() {
+            if (qrCodeDataURL) {
+                try {
+                    const response = await fetch(qrCodeDataURL);
+                    const blob = await response.blob();
+                    const file = new File([blob], 'qrcode.png', { type: blob.type });
+
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'UPI QR Code',
+                            text: 'Here is the UPI QR code.',
+                            files: [file],
+                        });
+                    } else {
+                        alert('Web Share API is not supported in your browser.');
+                    }
+                } catch (error) {
+                    console.error('Error sharing QR code:', error);
+                    alert('Error sharing QR code.');
+                }
+            } else {
+                alert('Please generate a QR code first.');
+            }
+        }
+    </script>
+</body>
+</html>
+
+      
