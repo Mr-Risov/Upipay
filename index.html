@@ -60,7 +60,7 @@
         function generateQRCode() {
             const amount = document.getElementById('amount').value;
             if (amount && amount > 0) {
-                const upiUrl = `upi://pay?pa=8761806448@okbizaxis&pn=Mrs.%20BINU%20%20DAULAGUPHU&mc=5712&aid=uGICAgMDywqSXag&ver=01&mode=01&tr=BCR2DN4TZLUINOKR&am=${amount}`;
+                const upiUrl = `upi://pay?pa=daulaguphu@fam&pn=Mrs.%20BINU%20%20DAULAGUPHU&mc=5712&aid=uGICAgMDywqSXag&ver=01&mode=01&tr=BCR2DN4TZLUINOKR&am=${amount}`;
                 const qrcodeContainer = document.getElementById('qrcode');
                 qrcodeContainer.innerHTML = ''; // Clear previous QR code
                 QRCode.toDataURL(upiUrl, function (error, url) {
